@@ -1,0 +1,21 @@
+version: "1.0"
+services:
+        ldap:
+                image: osixia/openldap
+                environment: 
+                - LDAP_DOMAIN=voronkov.ru
+                - LDAP_ADMIN_PASSWORD=12345
+                volumes:
+                        - /ldap/data/slapd/database:/var/lib/ldap
+                        - /ldap/data/slapd/config:/etc/ldap/slapd.d
+        ldap_admin:
+                 image: osixia/phpldapadmin
+                 ports:
+                         - "6443:443"
+                 environment:
+                         - PHPLDAPADMIN_LDAP_HOSTS=ldap
+
+
+                   
+
+
