@@ -23,6 +23,34 @@ services:
                         - /gitlab/gitlab_home/config:/etc/gitlab
                         - /gitlab/gitlab_home/logs:/var/log/gitlab
                         - /gitlab/gitlab_home/data:/var/opt/gitlab
+
+        mongodb:        
+                        image: docker.io/bitnami/mongodb:4.4
+                        volumes:
+                                - mongodb_data:/bitnami/mongodb
+                        environment:
+                                - MONGODB_REPLICA_SET_MODE=primary
+                                - MONGODB_REPLICA_SET_NAME=rs0
+                                - MONGODB_PORT_NUMBER=27017
+                                - MONGODB_INITIAL_PRIMARY_HOST=mongodb
+                                - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
+                                - MONGODB_ADVERTISED_HOSTNAME=mongodb
+                                -  MONGODB_ENABLE_JOURNAL=true
+                                - ALLOW_EMPTY_PASSWORD=yes 
+
+        rocketchat:
+                        image: registry.rocket.chat/rocketchat/rocket.chat
+                        ports:
+                                - "3000:3000"
+                        environment:
+                                - MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0
+                                - MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaset= rs0
+                                - ROOT_URL=http://localhost:3000
+                                - PORT=3000
+                                - DEPLOY_METHOD=docker
+                        depends_on:
+                                - mongodb
                    
 
-
+volumes:
+        mongodb_data:
